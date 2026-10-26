@@ -112,10 +112,14 @@ html[data-mode='sunrise'] .hero { background: linear-gradient(#ffd3bd, var(--pin
 .piped .w { white-space: nowrap; }
 .piped .l { display: inline-block; animation: pipe 0.32s cubic-bezier(.3,1.6,.6,1) both; transform: rotate(var(--r)); }
 @keyframes pipe { from { opacity: 0; transform: scale(0.2) translateY(10px) rotate(var(--r)); } }
-.bag { position: absolute; width: 70px; transform: translate(34%, -100%) rotate(-28deg); transform-origin: 20% 90%; transition: left 0.15s, top 0.15s; pointer-events: none; filter: drop-shadow(0 10px 14px rgba(0,0,0,.25)); }
+.bag { position: absolute; left: 82%; top: 32%; width: 24%; aspect-ratio: 643 / 900; transform: translate(-4%, -97%) rotate(18deg); transform-origin: 4% 97%; opacity: 0.95; transition: left 0.5s cubic-bezier(.3,1.3,.6,1), top 0.5s cubic-bezier(.3,1.3,.6,1), transform 0.5s; pointer-events: none; z-index: 2; }
+.bag.on { transform: translate(-4%, -97%); transition: left 0.14s ease-out, top 0.14s ease-out, transform 0.3s; }
+.bag img { width: 100%; display: block; transform: scaleX(-1); filter: drop-shadow(-8px 18px 18px rgba(60,0,10,.3)); }
+.bag.on img { animation: squeeze 0.28s ease-out; }
+@keyframes squeeze { 40% { transform: scaleX(-1) translate(-2%, 2%) scale(0.97, 1.02); } }
 .cake-builder.compact { grid-template-columns: 460px 1fr; }
 @media (max-width: 1100px) { .cake-builder, .cake-builder.compact { grid-template-columns: 1fr; } .cake-stage { order: -1; max-width: 520px; } }
-@media (max-width: 620px) { .bag { width: 56px; } }
+
 
 /* ---------- coffee ---------- */
 .coffee { padding-top: 110px; }

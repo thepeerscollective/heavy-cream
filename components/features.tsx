@@ -75,6 +75,8 @@ export function CakeBuilder({ compact = false }: { compact?: boolean }) {
   const textRef = useRef<HTMLDivElement>(null);
   const [bag, setBag] = useState({ x: 70, y: 60 });
   const prevLen = useRef(msg.length);
+  const [piping, setPiping] = useState(false);
+  const idle = useRef<ReturnType<typeof setTimeout>>(undefined);
   useEffect(() => {
     const out: { key: string; label: string }[] = []; const d = new Date();
     for (let i = 2; out.length < 4; i++) { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate() + i); out.push({ key: x.toISOString().slice(0, 10), label: x.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric' }).toLowerCase() }); }
@@ -83,10 +85,10 @@ export function CakeBuilder({ compact = false }: { compact?: boolean }) {
   useLayoutEffect(() => {
     const wrap = textRef.current; if (!wrap) return;
     const spans = wrap.querySelectorAll('span.l'); const last = spans[spans.length - 1] as HTMLElement | undefined;
-    const box = wrap.parentElement!.getBoundingClientRect();
-    if (last) { const r = last.getBoundingClientRect(); setBag({ x: ((r.right - box.left) / box.width) * 100, y: ((r.top - box.top) / box.height) * 100 }); }
+    const box = { left: -wrap.offsetLeft, top: -wrap.offsetTop, width: wrap.parentElement!.offsetWidth, height: wrap.parentElement!.offsetHeight };
+    if (last) { const r = { right: last.offsetLeft + last.offsetWidth, top: last.offsetTop, height: last.offsetHeight } as any; setBag({ x: ((r.right - box.left) / box.width) * 100, y: ((r.top + r.height * 0.72 - box.top) / box.height) * 100 }); }
   }, [msg, size]);
-  const onType = (v: string) => { const t = v.slice(0, 40); if (t.length > prevLen.current) ding('squeeze'); prevLen.current = t.length; setMsg(t); };
+  const onType = (v: string) => { const t = v.slice(0, 40); if (t.length > prevLen.current) ding('squeeze'); setPiping(true); clearTimeout(idle.current); idle.current = setTimeout(() => setPiping(false), 1100); prevLen.current = t.length; setMsg(t); };
   const sz = CAKE.sizes.find((s) => s.id === size)!; const fl = CAKE.flavours.find((f) => f.id === flav)!;
   const price = sz.price + extras.reduce((s, e) => s + (CAKE.extras.find((x) => x[0] === e)?.[1] ?? 0), 0);
   const words = msg.split(' ');
@@ -132,7 +134,7 @@ export function CakeBuilder({ compact = false }: { compact?: boolean }) {
             </span>
           ))}
         </div>
-        <img src={img('cake-piping-bag')} alt="" className="bag" style={{ left: `${bag.x}%`, top: `${bag.y}%` }} />
+        <span className={`bag ${piping ? 'on' : ''}`} style={piping ? { left: `${bag.x}%`, top: `${bag.y}%` } : undefined} aria-hidden><img key={msg.length} src={img('cake-piping-bag')} alt="" /></span>
       </div>
     </div>
   );
